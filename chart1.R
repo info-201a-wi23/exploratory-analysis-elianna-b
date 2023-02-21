@@ -1,6 +1,8 @@
 # Load necessary packages
 library("dplyr")
 library("ggplot2")
+install.packages("scales")
+library("scales")
 # Get the original data from Tidy Tuesday
 tuesdata <- tidytuesdayR::tt_load("2021-01-26")
 
