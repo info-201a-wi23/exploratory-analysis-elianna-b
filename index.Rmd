@@ -1,6 +1,9 @@
 ---
 title: "Exploratory Analysis"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
 ---
 
 ## Plastic Pollution
@@ -46,12 +49,40 @@ Although the creator did a good job of cleaning and categorizing the data, there
 
 ### Summary Information
 
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+# Get the original data from Tidy Tuesday
+tuesdata <- tidytuesdayR::tt_load('2021-01-26')
+
+plastics <- tuesdata$plastics
+
+# Summarize information
+summary_info <- list()
+summary_info$num_of_countries <- n_distinct(plastics$country)
+summary_info$max_total_count <- plastics %>% summarize(value = max(grand_total, na.rm = TRUE)) %>% pull(value)
+# high density polyethylene is the material of plastic milk containers, plastic bags, bottle caps, trash cans, oil cans, plastic lumber, toolboxes, supplement containers)
+summary_info$max_high_density_polyethylene_count <- plastics %>% summarize(value = max(hdpe, na.rm = TRUE)) %>% pull(value)
+# polyester plastic is the material of polyester fibers, soft drink bottles, food containers and some plastic bottles. 
+summary_info$max_polyester_plastic_count <- plastics %>% summarize(value = max(pet, na.rm = TRUE)) %>% pull(value)
+summary_info$max_num_volunteer <- plastics %>% summarize(value = max(volunteers, na.rm = TRUE)) %>% pull(value)
+```
+
 The total number of countries represented in this dataset is `r summary_info$num_of_countries`. The maximum number of total plastic items collected in one spot is `r summary_info$max_total_count`. The maximum number of items made with high density of polyethylene is `r summary_info$max_high_density_polyethylene_count`. These is the material used in things like plastic milk containers, plastic bags, bottle caps, trash cans, oil cans and supplement containers. The maximum number of items made with polyester is `r summary_info$max_polyester_plastic_count`. This includes items made of polyester fibers, soft drink bottles, food containers and some plastic bottles. Finally, the maximum number of volunteers at any one of the cleanup events reported in the data was `r summary_info$max_num_volunteer`.
 
 ### Table
 
-kable(aggregated)
-
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+aggregated <- plastics %>% group_by(country) %>% select(country, empty, hdpe, ldpe, pet, pp, ps, pvc, o, grand_total)
+aggregated <- aggregated %>% rename(empty_count = empty, 
+                                    high_density_polyethylene_count = hdpe, 
+                                    low_density_polyethylene_count = ldpe,
+                                    polyester_plastic_count = pet, 
+                                    polypropylene_count = pp, 
+                                    polystyrene_count = ps,
+                                    PVC_plastic_count = pvc,
+                                    other_count = o,
+                                    total_count = grand_total)
+View(aggregated)
+```
 The aggregated table includes information on what country the plastic cleanup happened in and the counts of plastic items collected for each type of plastic (high-density polyethylene, low-density polyethylene, polyester, PVC, etc.)
 
 ### Chart 1
@@ -63,14 +94,7 @@ Describe why you chose this chart and what information it reveals
 Here's an example of how to run an R script inside an RMarkdown file:
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-# Load necessary packages
-library("dplyr")
 library("ggplot2")
-# Get the original data from Tidy Tuesday
-tuesdata <- tidytuesdayR::tt_load("2021-01-26")
-
-# Extract the plastics data
-plastics <- tuesdata$plastics
 
 # Group all parent_companies and summarize the plastic emitted per company.
 top_20_companies <- plastics %>%
@@ -90,12 +114,40 @@ ggplot(data = top_20_companies) +
 
 ### Chart 2
 
-Include a chart
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+library("scales")
 
+# Group all countries and sum the # of events and volunteers
+events_and_volunteers_per_country <- plastics %>%
+  group_by(country) %>%
+  summarize(num_events = sum(num_events, na.rm = TRUE), num_volunteers = sum(volunteers, na.rm = TRUE)) %>%
+  filter(!country %in% c("EMPTY"))
+
+# Create a scatter plot of events and volunteers to show specific countries as outliers
+ggplot(events_and_volunteers_per_country, aes(x = num_events, y = num_volunteers)) +
+  geom_point(aes(color = country)) +
+  geom_text(aes(label = country), hjust = -0.2, vjust = 0.5) +
+  labs(title = "Number of Events vs Number of Volunteers by Country", x = "Number of Events", y = "Number of Volunteers") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  scale_x_continuous(breaks = seq(0, max(events_and_volunteers_per_country$num_events), by = 10000)) +
+  scale_y_continuous(breaks = seq(0, max(events_and_volunteers_per_country$num_volunteers), by = 300000))
+```
 Describe why you chose this chart and what information it reveals
 
 ### Chart 3
 
-Include a chart
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+# Group all countries and sum the # of HDPE and PET Plastics emitted
+hdpe_and_pet_plastics <- plastics %>%
+  group_by(country) %>%
+  summarize(num_hdpe = sum(hdpe, na.rm = TRUE), num_pet = sum(pet, na.rm = TRUE))
 
+# Create a line graph of HDPE and PET emissions to show their relationship and dangerous of the amount emitted
+ggplot(hdpe_and_pet_plastics, aes(x = num_hdpe, y = num_pet)) +
+  geom_line() +
+  labs(title = "Number of HDPE and PET Plastic Emissions", x = "High Density Polyethylene Count", y = "Polyester Plastic Count") +
+  scale_x_continuous(breaks = seq(0, max(hdpe_and_pet_plastics$num_hdpe), by = 1000)) +
+  scale_y_continuous(breaks = seq(0, max(hdpe_and_pet_plastics$num_pet), by = 10000))
+```
 Describe why you chose this chart and what information it reveals
