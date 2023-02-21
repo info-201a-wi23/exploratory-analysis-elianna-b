@@ -14,3 +14,4 @@ aggregated <- aggregated %>% rename(empty_count = empty,
                                     PVC_plastic_count = pvc,
                                     other_count = o,
                                     total_count = grand_total)
+
