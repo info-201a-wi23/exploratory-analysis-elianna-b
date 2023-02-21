@@ -8,15 +8,11 @@ output:
 
 ## Plastic Pollution
 
-Give your project a concise, interesting title that summarizes the entirety of your project
-
 ### Authors
 
 Elianna Baganov, Catherine Liu, Mia Pekez, Zoe Steers
 
-### February 20th
-
-Winter 2023
+### February 20th, Winter 2023
 
 ### Abstract
 
@@ -73,13 +69,6 @@ View(aggregated)
 The aggregated table includes information on what country the plastic cleanup happened in and the counts of plastic items collected for each type of plastic (high-density polyethylene, low-density polyethylene, polyester, PVC, etc.)
 
 ### Chart 1
-
-Include a chart
-
-Describe why you chose this chart and what information it reveals
-
-Here's an example of how to run an R script inside an RMarkdown file:
-
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 library("ggplot2")
 
@@ -99,8 +88,8 @@ ggplot(data = top_20_companies) +
   theme(legend.position = "none")
 ```
 
+Chart 1 shows the 20 companies that were responsible for the most amount of waste found during the events. This is important as it shows which companies need to be most conscious of their waste and highlights their position as polluters who need to be held accountable.
 ### Chart 2
-
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 library("scales")
 
@@ -120,7 +109,8 @@ ggplot(events_and_volunteers_per_country, aes(x = num_events, y = num_volunteers
   scale_x_continuous(breaks = seq(0, max(events_and_volunteers_per_country$num_events), by = 10000)) +
   scale_y_continuous(breaks = seq(0, max(events_and_volunteers_per_country$num_volunteers), by = 300000))
 ```
-Describe why you chose this chart and what information it reveals
+
+Chart 2 depicts the participation of different counties in volunteer work to collect the plastics. It includes the number of events and the number of volunteers which illustrates each country's participation in environmental restoration.
 
 ### Chart 3
 
@@ -137,4 +127,5 @@ ggplot(hdpe_and_pet_plastics, aes(x = num_hdpe, y = num_pet)) +
   scale_x_continuous(breaks = seq(0, max(hdpe_and_pet_plastics$num_hdpe), by = 1000)) +
   scale_y_continuous(breaks = seq(0, max(hdpe_and_pet_plastics$num_pet), by = 10000))
 ```
-Describe why you chose this chart and what information it reveals
+
+Chart 3 illustrates the relationship between the number of HDPE and PET plastic emissions. These plastics are incredibly harmful to the environment and creating a graphic like this can help bring awareness to the issue.
